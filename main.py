@@ -1,7 +1,6 @@
 import os
 import tkinter
 from tkinter import filedialog
-import yaml
 
 #
 # imagine = cv2.imread('Cat01.jpg', 3)
@@ -33,69 +32,43 @@ import yaml
 # cv2.imwrite('imagine_scris.jpg',imagine)
 import cv2
 import imutils
+import yaml
 
 with open("config.yaml", "r") as yamlfile:
     data = yaml.load(yamlfile, Loader=yaml.FullLoader)
-# print(data)
 
-# print()
+root = tkinter.Tk()
 
 images = []
-# def select_folder():
-root = tkinter.Tk()
-# images=[]
 img_file = tkinter.filedialog.askdirectory()
 root.destroy()
-i=0
+i = 0
+# print(img_file)
+directory = img_file + "_" + "aug"
+
+# print(directory)
+# check if the directory is created
+if directory == None:
+    os.mkdir(directory)
+
+#iterate over the folder and check every file if it's an jpg file
 for image in os.listdir(img_file):
     if (image.endswith(".jpg")):
-        i=i+1
-        # print(i)
-        # print(image)
+        i = i + 1
         images.append(image)
-        # print(image)
-        img=cv2.imread(os.path.join(img_file, image))
-        cv2.imshow("sdf",img)
+        img = cv2.imread(os.path.join(img_file, image))
+        cv2.imshow("Initial Image", img)
         cv2.waitKey(0)
-        if data[0]['Algorithm']=="Rotation":
-            rotation=int(data[0]['Parameters'])
-            rot = imutils.rotate(img, angle=rotation)
-            imagine_noua=image+"_"+str(i)
-            # print("imaigine nou   ",imagine_noua)
-            cv2.imwrite('imagine_noua.jpg', rot)
-            cv2.imshow("sdf", rot)
+        if data[0]['Algorithm'] == "Rotation":
+            rotation_angle = int(data[0]['Parameters'])
+            rot = imutils.rotate(img, angle=rotation_angle)
+            imagine_noua = image[:-4] + "_" + data[0]['Algorithm'] + "_" + str(i) + image[-4:]
+            # print(imagine_noua)
+            os.chdir(directory)
+            cv2.imwrite(
+                imagine_noua, rot)
+            cv2.imshow("New image", rot)
             cv2.waitKey(0)
         else:
             print("The algorithm was not defined.")
             break
-# print(images)
-
-# print(data[0]['Algorithm'])
-# for images in os.listdir(img_file):
-#     if (images.endswith(".png")):
-#         print(images)
-
-# def load_images_from_folder(folder):
-#     images = []
-#     for filename in os.listdir(folder):
-#         img = cv2.imread(os.path.join(folder, filename))
-#         cv2.imshow("ws", img)
-#         cv2.waitKey(0)
-#         # img = cv2.rotate(img, cv2.ROTATE_15)
-#         rot = imutils.rotate(img, angle=15)
-#         cv2.imshow("Imagine rotita", rot)
-#         cv2.waitKey(0)
-#         if img is not None:
-#             images.append(img)
-#     return images
-
-# if __name__ == "__main__":
-    # root = tkinter.Tk()
-    # img_file = tkinter.filedialog.askopenfilename(initialdir=".", title="Select image file",
-    #                                               filetypes=(("Image files", "*.jpg;*.png"), ("all files", "*.*")))
-    # root.destroy()
-    # img=cv2.imread(img_file)
-    # cv2.imshow("sd",img)
-    # cv2.waitKey(0)
-    # select_folder()
-    # load_images_from_folder("C:\\Users\\beuka\\UPT\\_masterAn1sem1\\FCV\\Lab\\Pictures")
