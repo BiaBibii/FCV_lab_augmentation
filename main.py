@@ -42,13 +42,15 @@ root = tkinter.Tk()
 images = []
 img_file = tkinter.filedialog.askdirectory()
 root.destroy()
+
 i = 0
 # print(img_file)
 directory = img_file + "_" + "aug"
 
 # print(directory)
-# check if the directory is created
+# check if the directory is created, if not, create it
 if directory == None:
+# create the new directory
     os.mkdir(directory)
 
 #iterate over the folder and check every file if it's an jpg file
