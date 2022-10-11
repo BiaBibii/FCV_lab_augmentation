@@ -50,7 +50,6 @@ root.destroy()
 #     print(key, value)
     # if key=="Sharpening":
     #     print(value['contrast'])
-
 # val=[len(i) for i in data.values()]
 # print(val)
 
@@ -76,37 +75,43 @@ for image in os.listdir(img_file):
             # print(key, value)
             if key == "Rotation":
                 rotation_angle = value
-                newimage = imutils.rotate(img, angle=rotation_angle)
+                newimage = img.copy()
+                newimage = imutils.rotate(newimage, angle=rotation_angle)
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
                 # print(imagine_noua)
                 os.chdir(directory)
                 cv2.imwrite(image_new_name, newimage)
-                cv2.imshow("New image", newimage)
+                cv2.imshow("Rotated Image", newimage)
                 cv2.waitKey(0)
 
             if key == "Contrast":
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
-
-                # contrast = 1.5  # 1.5 #0.5 #1.3 #0.5
                 contrast=value['contrast']
-                brightness =value['brightness']  # -100 #-50 #-150
-                imgA = img.copy()
+                brightness =value['brightness']
+                if data['Chain_processing']:
+                    newimage=newimage.copy()
+                else:
+                    newimage = img.copy()
                 # imgA = imgA.astype('float32')
-                imgA = (imgA * contrast + brightness).clip(0.0, 255.0)
+                newimage = (newimage * contrast + brightness).clip(0.0, 255.0)
                 os.chdir(directory)
-                cv2.imwrite(image_new_name, imgA)
-                cv2.imshow("New image1", imgA)
+                cv2.imwrite(image_new_name, newimage)
+                cv2.imshow("Image with contrast", newimage)
                 cv2.waitKey(0)
 
             if key== "Sharpening":
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
+                if data['Chain_processing']:
+                    newimage = newimage.copy()
+                else:
+                    newimage = img.copy()
                 kernel = np.array([[-1, -1, -1],
                                    [-1, 9, -1],
                                    [-1, -1, -1]])
-                imgFiltered = cv2.filter2D(img, -1, kernel)  # -1 result has the same depth as the source
+                newimage = cv2.filter2D(newimage, -1, kernel)  # -1 result has the same depth as the source
                 os.chdir(directory)
-                cv2.imwrite(image_new_name, imgFiltered)
-                cv2.imshow("New image1", imgFiltered)
+                cv2.imwrite(image_new_name, newimage)
+                cv2.imshow("Sharpened image", newimage)
                 cv2.waitKey(0)
 
             # else:
