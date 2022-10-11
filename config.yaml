@@ -1,2 +1,8 @@
-- Algorithm: Rotation
-  Parameters: '15'
+#Rotation - param= angle (int)
+#Color - param= color (string)
+Algorithm:
+- Rotation
+- Color
+Parameters:
+- 15
+- red
