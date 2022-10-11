@@ -1,4 +1,5 @@
 import os
+import shutil
 import tkinter
 from tkinter import filedialog
 
@@ -43,17 +44,19 @@ images = []
 img_file = tkinter.filedialog.askdirectory()
 root.destroy()
 
+val=[len(i) for i in data.values()]
+
 i = 0
-# print(img_file)
+
 directory = img_file + "_" + "aug"
 
-# print(directory)
-# check if the directory is created, if not, create it
-if directory == None:
-# create the new directory
-    os.mkdir(directory)
+#if directory exists, delete it and make a new one
+if os.path.exists(directory):
+    shutil.rmtree(directory)
+os.makedirs(directory)
 
-#iterate over the folder and check every file if it's an jpg file
+
+# iterate over the folder and check every file if it's an jpg file
 for image in os.listdir(img_file):
     if (image.endswith(".jpg")):
         i = i + 1
@@ -61,16 +64,26 @@ for image in os.listdir(img_file):
         img = cv2.imread(os.path.join(img_file, image))
         cv2.imshow("Initial Image", img)
         cv2.waitKey(0)
-        if data[0]['Algorithm'] == "Rotation":
-            rotation_angle = int(data[0]['Parameters'])
-            rot = imutils.rotate(img, angle=rotation_angle)
-            imagine_noua = image[:-4] + "_" + data[0]['Algorithm'] + "_" + str(i) + image[-4:]
-            # print(imagine_noua)
-            os.chdir(directory)
-            cv2.imwrite(
-                imagine_noua, rot)
-            cv2.imshow("New image", rot)
-            cv2.waitKey(0)
-        else:
-            print("The algorithm was not defined.")
-            break
+        for j in range(val[0]):
+            if data['Algorithm'][j] == "Rotation":
+                rotation_angle = data['Parameters'][j]
+                newimage = imutils.rotate(img, angle=rotation_angle)
+                image_new_name = image[:-4] + "_" + data['Algorithm'][j] + "_" + str(i) + image[-4:]
+                # print(imagine_noua)
+                os.chdir(directory)
+                cv2.imwrite(image_new_name, newimage)
+                cv2.imshow("New image", newimage)
+                cv2.waitKey(0)
+
+            if data['Algorithm'][j] == "Color":
+                image_new_name = image[:-4] + "_" + data['Algorithm'][j] + "_" + str(i) + image[-4:]
+                # print(imagine_noua)
+
+                imgBGR_new = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                os.chdir(directory)
+                cv2.imwrite(image_new_name, imgBGR_new)
+                cv2.imshow("New image1", imgBGR_new)
+                cv2.waitKey(0)
+            # else:
+            #     print("The algorithm was not defined.")
+            #     continue
