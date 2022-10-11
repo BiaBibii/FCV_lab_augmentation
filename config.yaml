@@ -1,8 +1,5 @@
-#Rotation - param= angle (int)
-#Color - param= color (string)
-Algorithm:
-- Rotation
-- Color
-Parameters:
-- 15
-- red
+Rotation: 10 #angle of rotation
+Contrast:
+  brightness: -100 # [-127,127]
+  contrast: 1.3   # [0,1]
+Sharpening: {}

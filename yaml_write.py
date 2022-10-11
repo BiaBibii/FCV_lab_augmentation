@@ -1,15 +1,12 @@
 import yaml
 
 augmentation = {
-        'Algorithm': [
-            'Rotation',
-            'Color'
-        ],
-        'Parameters': [
-            15,
-            'red'
-        ]
-}
+            'Rotation':12,
+             'Contrast': {
+                'brightness':100,'contrast':12
+            },
+            'Sharpening': {}
+        }
 
 
 with open("config.yaml", 'w') as yamlfile:

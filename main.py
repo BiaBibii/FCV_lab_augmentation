@@ -33,6 +33,7 @@ from tkinter import filedialog
 # cv2.imwrite('imagine_scris.jpg',imagine)
 import cv2
 import imutils
+import numpy as np
 import yaml
 
 with open("config.yaml", "r") as yamlfile:
@@ -44,7 +45,14 @@ images = []
 img_file = tkinter.filedialog.askdirectory()
 root.destroy()
 
-val=[len(i) for i in data.values()]
+# print(data['Algorithm'][0])
+# for key, value in data.items():
+#     print(key, value)
+    # if key=="Sharpening":
+    #     print(value['contrast'])
+
+# val=[len(i) for i in data.values()]
+# print(val)
 
 i = 0
 
@@ -64,26 +72,43 @@ for image in os.listdir(img_file):
         img = cv2.imread(os.path.join(img_file, image))
         cv2.imshow("Initial Image", img)
         cv2.waitKey(0)
-        for j in range(val[0]):
-            if data['Algorithm'][j] == "Rotation":
-                rotation_angle = data['Parameters'][j]
+        for key, value in data.items():
+            # print(key, value)
+            if key == "Rotation":
+                rotation_angle = value
                 newimage = imutils.rotate(img, angle=rotation_angle)
-                image_new_name = image[:-4] + "_" + data['Algorithm'][j] + "_" + str(i) + image[-4:]
+                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
                 # print(imagine_noua)
                 os.chdir(directory)
                 cv2.imwrite(image_new_name, newimage)
                 cv2.imshow("New image", newimage)
                 cv2.waitKey(0)
 
-            if data['Algorithm'][j] == "Color":
-                image_new_name = image[:-4] + "_" + data['Algorithm'][j] + "_" + str(i) + image[-4:]
-                # print(imagine_noua)
+            if key == "Contrast":
+                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
 
-                imgBGR_new = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                # contrast = 1.5  # 1.5 #0.5 #1.3 #0.5
+                contrast=value['contrast']
+                brightness =value['brightness']  # -100 #-50 #-150
+                imgA = img.copy()
+                # imgA = imgA.astype('float32')
+                imgA = (imgA * contrast + brightness).clip(0.0, 255.0)
                 os.chdir(directory)
-                cv2.imwrite(image_new_name, imgBGR_new)
-                cv2.imshow("New image1", imgBGR_new)
+                cv2.imwrite(image_new_name, imgA)
+                cv2.imshow("New image1", imgA)
                 cv2.waitKey(0)
+
+            if key== "Sharpening":
+                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
+                kernel = np.array([[-1, -1, -1],
+                                   [-1, 9, -1],
+                                   [-1, -1, -1]])
+                imgFiltered = cv2.filter2D(img, -1, kernel)  # -1 result has the same depth as the source
+                os.chdir(directory)
+                cv2.imwrite(image_new_name, imgFiltered)
+                cv2.imshow("New image1", imgFiltered)
+                cv2.waitKey(0)
+
             # else:
             #     print("The algorithm was not defined.")
             #     continue
