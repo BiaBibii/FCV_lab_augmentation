@@ -35,6 +35,8 @@ import cv2
 import imutils
 import numpy as np
 import yaml
+from PIL import Image
+from PIL.Image import Transpose
 
 with open("config.yaml", "r") as yamlfile:
     data = yaml.load(yamlfile, Loader=yaml.FullLoader)
@@ -62,6 +64,11 @@ if os.path.exists(directory):
     shutil.rmtree(directory)
 os.makedirs(directory)
 
+def write_img(directory, image_new_name, new_image):
+    os.chdir(directory)
+    cv2.imwrite(image_new_name, new_image)
+    cv2.imshow("Resized image", new_image)
+    cv2.waitKey(0)
 
 # iterate over the folder and check every file if it's an jpg file
 for image in os.listdir(img_file):
@@ -71,33 +78,41 @@ for image in os.listdir(img_file):
         img = cv2.imread(os.path.join(img_file, image))
         cv2.imshow("Initial Image", img)
         cv2.waitKey(0)
+        newimage = img.copy()
         for key, value in data.items():
             # print(key, value)
             if key == "Rotation":
                 rotation_angle = value
-                newimage = img.copy()
+                if data['Chain_processing']:
+                    newimage = newimage.copy()
+                else:
+                    newimage = img.copy()
                 newimage = imutils.rotate(newimage, angle=rotation_angle)
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
                 # print(imagine_noua)
-                os.chdir(directory)
-                cv2.imwrite(image_new_name, newimage)
-                cv2.imshow("Rotated Image", newimage)
-                cv2.waitKey(0)
-
+                write_img(directory,image_new_name,newimage)
             if key == "Contrast":
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
                 contrast=value['contrast']
+                if data['Chain_processing']:
+                    newimage=newimage.copy()
+                else:
+                    newimage = img.copy()
+                newimage = newimage.astype('float32')
+                newimage = (newimage * contrast).clip(0.0, 255.0)
+
+                write_img(directory,image_new_name,newimage)
+                
+            if key == "Brightness":
+                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
                 brightness =value['brightness']
                 if data['Chain_processing']:
                     newimage=newimage.copy()
                 else:
                     newimage = img.copy()
-                # imgA = imgA.astype('float32')
-                newimage = (newimage * contrast + brightness).clip(0.0, 255.0)
-                os.chdir(directory)
-                cv2.imwrite(image_new_name, newimage)
-                cv2.imshow("Image with contrast", newimage)
-                cv2.waitKey(0)
+                newimage = newimage.astype('float32')
+                newimage = (newimage + brightness).clip(0.0, 255.0)
+                write_img(directory,image_new_name,newimage)
 
             if key== "Sharpening":
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
@@ -108,12 +123,28 @@ for image in os.listdir(img_file):
                 kernel = np.array([[-1, -1, -1],
                                    [-1, 9, -1],
                                    [-1, -1, -1]])
+                # kernel=value['kernel']
                 newimage = cv2.filter2D(newimage, -1, kernel)  # -1 result has the same depth as the source
-                os.chdir(directory)
-                cv2.imwrite(image_new_name, newimage)
-                cv2.imshow("Sharpened image", newimage)
-                cv2.waitKey(0)
+                write_img(directory,image_new_name,newimage)
 
-            # else:
-            #     print("The algorithm was not defined.")
-            #     continue
+            if key== "Resize":
+                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
+                if data['Chain_processing']:
+                    newimage = newimage.copy()
+                else:
+                    newimage = img.copy()
+
+                newimage = cv2.resize(newimage, (value['height'],value['width']))
+                # new_image=cv2.resize(newimage, None, fx=0.75, fy=0.75)
+                write_img(directory,image_new_name,newimage)
+
+            if key== "Flip":
+                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
+                if data['Chain_processing']:
+                    newimage = newimage.copy()
+                else:
+                    newimage = img.copy()
+
+                newimage= cv2.flip(newimage, value)
+                write_img(directory,image_new_name,newimage)
+
