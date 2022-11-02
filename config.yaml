@@ -9,5 +9,5 @@ Resize:
 
 Flip: 1 #1 - mirror, -1 upside down, 0- upside down and mirror
 Rotation: 10 #angle of rotation
-
+Scaling:
 Chain_processing: False #True or False

@@ -3,40 +3,12 @@ import shutil
 import tkinter
 from tkinter import filedialog
 
-#
-# imagine = cv2.imread('Cat01.jpg', 3)
-#
-# # cv2.imshow('Imagine', imagine)
-# # cv2.waitKey(0)
-# window_name = 'Image'
-# # font
-# font = cv2.FONT_HERSHEY_SIMPLEX
-# # org
-# org = (50, 50)
-#
-# # fontScale
-# fontScale = 1
-# # Blue color in BGR
-# color = (255, 0, 0)
-#
-# # Line thickness of 2 px
-# thickness = 2
-#
-# # Using cv2.putText() method
-# image = cv2.putText(imagine, 'Beuka Bianka', org, font,
-#                     fontScale, color, thickness, cv2.LINE_AA)
-#
-# # Displaying the image
-# cv2.imshow(window_name, image)
-# # cv2.imshow('Imagine', imagine)
-# cv2.waitKey(0)
-# cv2.imwrite('imagine_scris.jpg',imagine)
 import cv2
 import imutils
 import numpy as np
 import yaml
 from PIL import Image
-from PIL.Image import Transpose
+# from PIL.Image import Transpose
 
 with open("config.yaml", "r") as yamlfile:
     data = yaml.load(yamlfile, Loader=yaml.FullLoader)
@@ -46,14 +18,6 @@ root = tkinter.Tk()
 images = []
 img_file = tkinter.filedialog.askdirectory()
 root.destroy()
-
-# print(data['Algorithm'][0])
-# for key, value in data.items():
-#     print(key, value)
-    # if key=="Sharpening":
-    #     print(value['contrast'])
-# val=[len(i) for i in data.values()]
-# print(val)
 
 i = 0
 
@@ -67,59 +31,46 @@ os.makedirs(directory)
 def write_img(directory, image_new_name, new_image):
     os.chdir(directory)
     cv2.imwrite(image_new_name, new_image)
-    cv2.imshow("Resized image", new_image)
-    cv2.waitKey(0)
 
 # iterate over the folder and check every file if it's an jpg file
 for image in os.listdir(img_file):
     if (image.endswith(".jpg")):
-        i = i + 1
         images.append(image)
         img = cv2.imread(os.path.join(img_file, image))
+
         cv2.imshow("Initial Image", img)
         cv2.waitKey(0)
         newimage = img.copy()
         for key, value in data.items():
-            # print(key, value)
             if key == "Rotation":
                 rotation_angle = value
-                if data['Chain_processing']:
-                    newimage = newimage.copy()
-                else:
-                    newimage = img.copy()
+                i = i + 1
+                newimage = img.copy()
                 newimage = imutils.rotate(newimage, angle=rotation_angle)
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
-                # print(imagine_noua)
                 write_img(directory,image_new_name,newimage)
             if key == "Contrast":
+                i = i + 1
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
                 contrast=value['contrast']
-                if data['Chain_processing']:
-                    newimage=newimage.copy()
-                else:
-                    newimage = img.copy()
+                newimage = img.copy()
                 newimage = newimage.astype('float32')
                 newimage = (newimage * contrast).clip(0.0, 255.0)
-
                 write_img(directory,image_new_name,newimage)
                 
             if key == "Brightness":
+                i = i + 1
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
                 brightness =value['brightness']
-                if data['Chain_processing']:
-                    newimage=newimage.copy()
-                else:
-                    newimage = img.copy()
+                newimage = img.copy()
                 newimage = newimage.astype('float32')
                 newimage = (newimage + brightness).clip(0.0, 255.0)
                 write_img(directory,image_new_name,newimage)
 
             if key== "Sharpening":
+                i = i + 1
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
-                if data['Chain_processing']:
-                    newimage = newimage.copy()
-                else:
-                    newimage = img.copy()
+                newimage = img.copy()
                 kernel = np.array([[-1, -1, -1],
                                    [-1, 9, -1],
                                    [-1, -1, -1]])
@@ -128,23 +79,25 @@ for image in os.listdir(img_file):
                 write_img(directory,image_new_name,newimage)
 
             if key== "Resize":
+                i = i + 1
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
-                if data['Chain_processing']:
-                    newimage = newimage.copy()
-                else:
-                    newimage = img.copy()
-
+                newimage = img.copy()
                 newimage = cv2.resize(newimage, (value['height'],value['width']))
                 # new_image=cv2.resize(newimage, None, fx=0.75, fy=0.75)
                 write_img(directory,image_new_name,newimage)
 
             if key== "Flip":
+                i = i + 1
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
-                if data['Chain_processing']:
-                    newimage = newimage.copy()
-                else:
-                    newimage = img.copy()
-
+                newimage = img.copy()
                 newimage= cv2.flip(newimage, value)
                 write_img(directory,image_new_name,newimage)
+
+            if key=="Scaling":
+                i = i + 1
+                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
+                newimage = img.copy()
+                alpha=0.2
+                newimage1=np.array(newimage)
+                write_img(directory, image_new_name, newimage1)
 
