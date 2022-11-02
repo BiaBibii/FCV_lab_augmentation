@@ -42,13 +42,9 @@ for image in os.listdir(img_file):
         cv2.waitKey(0)
         newimage = img.copy()
         for key, value in data.items():
-            if key == "Rotation":
-                rotation_angle = value
-                i = i + 1
-                newimage = img.copy()
-                newimage = imutils.rotate(newimage, angle=rotation_angle)
-                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
-                write_img(directory,image_new_name,newimage)
+#------------------------------------------------------------------------------------ -------
+# ------------------Pixel level / color / filtering augmentation algorithms.-----------------
+# --------------------------------------------------------------------------------------------
             if key == "Contrast":
                 i = i + 1
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
@@ -77,7 +73,9 @@ for image in os.listdir(img_file):
                 # kernel=value['kernel']
                 newimage = cv2.filter2D(newimage, -1, kernel)  # -1 result has the same depth as the source
                 write_img(directory,image_new_name,newimage)
-
+# ------------------------------------------------------------------------------------ -------
+# ------------------Geometrical transformation augmentation algorithms.-----------------
+# --------------------------------------------------------------------------------------------
             if key== "Resize":
                 i = i + 1
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
@@ -93,6 +91,14 @@ for image in os.listdir(img_file):
                 newimage= cv2.flip(newimage, value)
                 write_img(directory,image_new_name,newimage)
 
+            if key == "Rotation":
+                rotation_angle = value
+                i = i + 1
+                newimage = img.copy()
+                newimage = imutils.rotate(newimage, angle=rotation_angle)
+                image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
+                write_img(directory, image_new_name, newimage)
+            #     doesn't work
             if key=="Scaling":
                 i = i + 1
                 image_new_name = image[:-4] + "_" + key + "_" + str(i) + image[-4:]
