@@ -6,8 +6,9 @@ Brightness:
 Resize:
   height: 500
   width: 500
-
+Red:
 Flip: 1 #1 - mirror, -1 upside down, 0- upside down and mirror
-Rotation: 10 #angle of rotation
-Scaling:
+Rotation: 90 #angle of rotation
+Rotation_library: 13 #angle of rotation
+Grayscale:
 Chain_processing: False #True or False
